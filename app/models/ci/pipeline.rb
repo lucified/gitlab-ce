@@ -179,9 +179,9 @@ module Ci
 
     def ci_yaml_file
       @ci_yaml_file ||= begin
-        url = ENV['MINARD_CI_YML_URL'] || "http://localhost:8000/ci/minard/v1/projects/%d/ciyml"
+        url = ENV['MINARD_CI_YML_URL'] || "http://localhost:8000/ci/projects/%d/%s/%s/yml"
         response = begin
-          faraday.get(url % project_id)
+          faraday.get(sprintf(url, project_id, ref, sha))
         rescue
           nil
         end
