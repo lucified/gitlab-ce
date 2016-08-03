@@ -1,3 +1,7 @@
+
+require 'faraday'
+require 'faraday_middleware'
+
 module Ci
   class Pipeline < ActiveRecord::Base
     extend Ci::Model
@@ -113,6 +117,8 @@ module Ci
       ##
       # We persist pipeline only if there are builds available
       #
+      Rails.logger.error "************ CREATE_BUILDS *****************"
+
       return unless config_processor
 
       build_builds_for_stages(config_processor.stages, user,
@@ -162,6 +168,7 @@ module Ci
       @config_processor ||= begin
         Ci::GitlabCiYamlProcessor.new(ci_yaml_file, project.path_with_namespace)
       rescue Ci::GitlabCiYamlProcessor::ValidationError, Psych::SyntaxError => e
+        Rails.logger.error e.message
         self.yaml_errors = e.message
         nil
       rescue
@@ -171,12 +178,19 @@ module Ci
     end
 
     def ci_yaml_file
-      return @ci_yaml_file if defined?(@ci_yaml_file)
-
       @ci_yaml_file ||= begin
+        url = ENV['MINARD_CI_YML_URL'] || "http://localhost:8000/ci/minard/v1/projects/%d/ciyml"
+        response = begin
+          faraday.get(url % project_id)
+        rescue
+          nil
+        end
+        return response.body if response && response.success?
+
         blob = project.repository.blob_at(sha, '.gitlab-ci.yml')
         blob.load_all_data!(project.repository)
         blob.data
+
       rescue
         nil
       end
@@ -213,7 +227,22 @@ module Ci
       ]
     end
 
+
+    def faraday
+      @faraday ||= Faraday.new(@base_uri) do |conn|
+        initialize_connection(conn, {})
+      end
+    end
+
+    def initialize_connection(conn, options)
+      conn.adapter :net_http
+    end
+
+
     private
+
+
+
 
     def build_builds_for_stages(stages, user, status, trigger_request)
       ##

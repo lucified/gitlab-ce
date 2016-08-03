@@ -3,7 +3,7 @@ module Ci
     class API < Grape::API
       include ::API::APIGuard
       version 'v1', using: :path
-
+      # THIS IS THE CI API #
       rescue_from ActiveRecord::RecordNotFound do
         rack_response({ 'message' => '404 Not found' }.to_json, 404)
       end
