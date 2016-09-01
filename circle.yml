@@ -1,0 +1,22 @@
+
+machine:
+  pre:
+    - curl -sSL https://s3.amazonaws.com/circle-downloads/install-circleci-docker.sh | bash -s -- 1.10.0
+  services:
+    - docker
+
+dependencies:
+  override:
+    - nvm install && nvm use && nvm alias default $(nvm current)
+    - npm install -g ecs-upd8r@~0.1.6
+
+test:
+  override:
+    - echo "No tests specified"
+
+deployment:
+  staging:
+    branch: lucified
+    commands:
+      - ecs-upd8r
+
