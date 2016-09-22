@@ -7,7 +7,7 @@ machine:
 
 dependencies:
   override:
-    - npm install -g ecs-upd8r@~0.1.6
+    - npm install -g ecs-updater@~0.2.1
 
 test:
   override:
@@ -21,5 +21,5 @@ deployment:
   staging:
     branch: lucified
     commands:
-      - ecs-upd8r
+      - ecs-updater
 
