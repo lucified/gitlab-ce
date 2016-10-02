@@ -1,9 +1,0 @@
-{
-  "REGION": "eu-west-1",
-  "CLUSTER": "minard",
-  "SERVICE": "minard-gitlab-staging",
-  "CONTAINER": "gitlab",
-  "IMAGE": "gitlab",
-  "BUCKET": "lucify-configuration",
-  "KEY": "ecs_services/gitlab_staging"
-}
