@@ -16,11 +16,10 @@ case ${1} in
       app:start)
         migrate_database
         rm -rf /var/run/supervisor.sock
-        REG_URL=http://${REGISTER_SERVICE}/${SERVICE_NAME:-gitlab}
-        if curl -X PUT -s --connect-timeout 1 $REG_URL; then
-          echo "Service registered with name ${SERVICE_NAME:-gitlab}"
-        else
-          echo "Service not registered"
+        if curl -s --connect-timeout 1 http://169.254.169.254/latest/meta-data/; then
+          if route53-updater --action UPDATE --hostedZoneId $ROUTE53_ZONE_LOCAL --recordSetName $ROUTE53_BASEURL_LOCAL. --ttl 5 --type A --metadata local-ipv4; then
+            echo "Registered to Route53 with baseurl $ROUTE53_BASEURL_LOCAL"
+          fi
         fi
         exec /usr/bin/supervisord -nc /etc/supervisor/supervisord.conf
         ;;
