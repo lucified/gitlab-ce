@@ -29,6 +29,3 @@ into Lucify's internal environments.
 
 [MIT Expat license](LICENSE)
 
-## Internal notes
-
-[Notes](internal-notes.md) for Lucify's internal use.
